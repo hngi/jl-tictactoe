@@ -32,8 +32,12 @@
  }
  .chat-window{
     height: 47%;
+    max-height: 40vh;
      overflow: auto;
      background-color: #ffffffc7;
+     overflow-y: scroll;
+     display: flex;
+     flex-direction: column-reverse;
  }
 .chat .message-box{
     background-color: #fff;
@@ -189,6 +193,6 @@
  @media (min-width: 1000px) {
    body {
      height: 100vh;
-     overflow: hidden;
+     /* overflow: hidden; */
    }
  }
