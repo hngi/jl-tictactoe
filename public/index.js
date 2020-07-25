@@ -168,6 +168,12 @@
     });
 
     //communication events
+    socket.on("user.join", (data)=>{
+        $(".output").append(`<small style="color: #7e7979aa;width: 100%;" class="pl-2"><em>${data}</em></small><br>`);
+    })
+    socket.on("user.left", (data)=>{
+        $(".output").append(`<small style="color: #7e7979aa; width: 100%;" class="pl-2"><em>${data}</em></small><br>`);
+    })
     $("#happy").on("click", ()=>{
         socket.emit("reaction", {
             reaction: "😀",

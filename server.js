@@ -62,6 +62,12 @@ var gameOngoing = false;
 
 // When a client connects
 io.of("/game").on("connection", function (socket) {
+
+    if (socket.handshake.query.type == "join") {
+        io.of("/game").emit("user.left", `User joined from ${socket.handshake.query.u}'s link`);
+    } else {
+        io.of("/game").emit("user.join", `${socket.handshake.query.u} joined`);
+    }
     let id = socket.id;
 
     clients[socket.id] = socket;
@@ -69,14 +75,20 @@ io.of("/game").on("connection", function (socket) {
     socket.on("disconnect", () => { // Bind event for that socket (player)
         delete clients[socket.id];
         socket.broadcast.emit("clientdisconnect", id);
+        if(socket.handshake.query.type == "join"){
+            io.of("/game").emit("user.left", `game disconnected`);
+        }else{
+            io.of("/game").emit("user.left", `${socket.handshake.query.u} left`);
+        }
     });
 
     var isViewer = socket.handshake.headers.referer;
     //room spectator is viewing
     const specRoom = String(isViewer).split("room=")[1];
     if (String(isViewer).split("type=")[1].split("&")[0] == "spectate") {
+        io.of("/game").emit("user.join", `spectator joined`);
         viewers.push({socket: socket, room: specRoom});
-        socket.emit("new user", "New user Joined!!");
+        socket.emit("new.spec", "New user Joined!!");
     } else {
 
         join(socket); // Fill 'players' data structure
@@ -188,6 +200,7 @@ io.of("/view").on("connection", (spectator) => {
     spectator.on("reaction", (data) => {
         io.of("/game").emit("reaction", data);
     });
+    io.of("/view").emit("user.join", `spectator joined`);
     //event to send message
     spectator.on("message", (data) => {
         io.of("/game").emit("message", data);
@@ -240,6 +253,6 @@ function opponentOf(socket) {
 }
 
 //listen on server
-server.listen(process.env.PORT || 5000, () => {
+server.listen(process.env.PORT || 4000, () => {
     console.log("Server running on PORT:5000");
 });
