@@ -57,6 +57,7 @@ var players = {}; // opponent: scoket.id of the opponent, symbol = "X" | "O", so
 var unmatched;
 var viewers = [];
 var leaderBoard = [];
+var gameOngoing = false;
 
 
 // When a client connects
@@ -227,6 +228,7 @@ function join(socket) {
         // username[socket.id].username = socket.id;
     } else { //If 'unmatched' is not define it means the player (current socket) is waiting for an opponent (player #1)
         unmatched = socket.id;
+        gameOngoing = true;
     }
 }
 
@@ -239,5 +241,5 @@ function opponentOf(socket) {
 
 //listen on server
 server.listen(process.env.PORT || 5000, () => {
-    console.log("Server running on PORT:4000")
+    console.log("Server running on PORT:5000");
 });
