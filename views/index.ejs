@@ -26,8 +26,13 @@
         <p class="moves"><strong class="badge badge-secondary badge-pill p-2">Moves:</strong> <span id="moves">0</span>
         </p>
     </div>
-    <div>Invite link: <a href="" style="text-decoration: none;cursor: text;"><small id="invite"
-                style="color: #03a9f4;font-weight: bold;"></small></a>
+    <div id="invite-friends">Invite link: 
+        <a href="" style="text-decoration: none;cursor: text;">
+            <small id="invite" style="color: #03a9f4;font-weight: bold;"></small>
+        </a>
+        Spectators:<a href="" style="text-decoration: none;cursor: text;">
+            <small id="spectate" style="color: #03a9f4;font-weight: bold;"></small>
+        </a>
     </div>
     <div class="leader-board">
         <p class="loader"></p>
@@ -51,7 +56,7 @@
         </div>
         <div class="chat">
             <div class="controls">
-                <a id="toggle_sound">Toggle Sound</a>
+                <a id="toggle_sound" class="btn btn-danger">Mute</a>
             </div>
             <div class="chat-window">
                 <div class="output"></div>
@@ -75,7 +80,10 @@
     </style>
     <script src="/index.js"></script>
     <script>
-        $("#invite").text(window.location.origin + "/game");
+        const url = window.location.href.replace("create", "join");
+        const url2 = window.location.href.replace("create", "spectate").replace("join", "spectate").replace("game", "view");
+        $("#invite").text(url);
+        $("#spectate").text(url2);
     </script>
 </body>
 </html>

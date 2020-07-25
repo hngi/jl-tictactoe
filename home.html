@@ -68,7 +68,7 @@
         //For user creating game
         $("#new_username").on("change keyup paste", ()=>{
             if($("#new_username").val().length > 0){
-                $(".create #game").attr("href", `/game?u=${$("#new_username").val()}&type=create`);
+                $(".create #game").attr("href", `/game?u=${$("#new_username").val()}&type=create&room=${Math.round(Math.random() * 10)}`);
                 // $(".create form").attr("action", `${window.location.origin}/game?u=${$("#new_username").val()}&type=create`);
             }
         })

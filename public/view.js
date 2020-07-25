@@ -98,9 +98,15 @@
         if(isPlaying == 1){
             isPlaying = 0;
             sound.stop();
+            $("#toggle_sound").text("unmute");
+            $("#toggle_sound").removeClass("btn-danger");
+            $("#toggle_sound").addClass("btn-success");
         }else{
             isPlaying = 1;
             sound.play();
+            $("#toggle_sound").text("mute");
+            $("#toggle_sound").removeClass("btn-success");
+            $("#toggle_sound").addClass("btn-danger");
         }
     });
     //click sound

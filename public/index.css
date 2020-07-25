@@ -99,11 +99,11 @@
      border: none;
  }
  #toggle_sound{
-     padding: 10px;
+     /* padding: 10px;
      border-radius: 2mm;
      border: none;
      background-color: #fff;
-     cursor: pointer;
+     cursor: pointer; */
  }
 
  #message {

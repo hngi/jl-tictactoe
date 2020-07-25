@@ -1,11 +1,11 @@
 const express = require("express"),
-            database = require("./config/database")(),
-            User = require("./models/user"),
-            http = require("http"),
-             socketIo = require("socket.io"),
-             fs = require("fs"),
-             getUsername = require("./middleware/getUsername"),
-             ejs = require("ejs");
+    database = require("./config/database")(),
+    User = require("./models/user"),
+    http = require("http"),
+    socketIo = require("socket.io"),
+    fs = require("fs"),
+    getUsername = require("./middleware/getUsername"),
+    ejs = require("ejs");
 
 
 const app = express();
@@ -17,28 +17,34 @@ const clients = {};
 app.use(express.static("public"));
 app.use(express.static("node_modules"));
 
-app.get("/",(req, res) => {
-    res.sendFile("home.html", { root: __dirname })
+app.get("/", (req, res) => {
+    res.sendFile("home.html", {
+        root: __dirname
+    })
 });
 
 app.get("/game", getUsername, async (req, res) => {
     // const stream = fs.createReadStream(__dirname + "/index.html");
     // stream.pipe(res);
     const username = req.data.player;
-    const user = await User.findOne({ username });
-    if(!user){
+    const user = await User.findOne({
+        username
+    });
+    if (!user) {
         const newUser = new User({
             username: username
         });
-        User.create(newUser).catch(err =>{
+        User.create(newUser).catch(err => {
             return res.redirect("back");
-        }).then(success =>{
+        }).then(success => {
             return res.render("index.ejs", {
                 data: success
             });
         });
-    }else{
-        return res.render("index.ejs", { data: user });
+    } else {
+        return res.render("index.ejs", {
+            data: user
+        });
     }
 });
 
@@ -58,15 +64,18 @@ io.of("/game").on("connection", function (socket) {
     let id = socket.id;
 
     clients[socket.id] = socket;
-    
+
     socket.on("disconnect", () => { // Bind event for that socket (player)
         delete clients[socket.id];
         socket.broadcast.emit("clientdisconnect", id);
     });
 
-    if(socket.handshake.headers.referer === "http://localhost:5000/view") {
-        viewers.push(socket)
-        socket.emit("new user", "New user Joined!!")
+    var isViewer = socket.handshake.headers.referer;
+    //room spectator is viewing
+    const specRoom = String(isViewer).split("room=")[1];
+    if (String(isViewer).split("type=")[1].split("&")[0] == "spectate") {
+        viewers.push({socket: socket, room: specRoom});
+        socket.emit("new user", "New user Joined!!");
     } else {
 
         join(socket); // Fill 'players' data structure
@@ -97,13 +106,15 @@ io.of("/game").on("connection", function (socket) {
 
             socket.emit("move.made", data); // Emit for the player who made the move
             opponentOf(socket).emit("move.made", data); // Emit for the opponent
-            viewers.forEach(socket => {
-                socket.emit("move.made", data);
+            viewers.forEach(viewer => {
+                if (viewer.room == opponentOf(socket).handshake.query.room) {
+                    viewer.socket.emit("move.made", data);
+                }
             });
         });
 
         //handle win and losses update
-        socket.on("updateWin", (data)=>{
+        socket.on("updateWin", (data) => {
             User.findOneAndUpdate({
                 username: data.username
             }, {
@@ -120,23 +131,32 @@ io.of("/game").on("connection", function (socket) {
             io.of("/game").emit("updateWin", data);
         });
         //update user's loss in db
-        socket.on("updateLoss", (data)=>{
-            User.findOneAndUpdate({ username: data.username },{ losses: Number(data.losses) },{ new:true }, (error, success)=>{
-                if(error){
+        socket.on("updateLoss", (data) => {
+            User.findOneAndUpdate({
+                username: data.username
+            }, {
+                losses: Number(data.losses)
+            }, {
+                new: true
+            }, (error, success) => {
+                if (error) {
                     console.log("ERROR: ", error)
-                }else{
+                } else {
                     console.log("SUCCESS", success)
                 }
             });
-             io.of("/game").emit("updateLoss", data);
+            io.of("/game").emit("updateLoss", data);
         });
 
         //get all users and calculate leaderboard
-        socket.on("getLeaderBoard", async(data)=>{
+        socket.on("getLeaderBoard", async (data) => {
             leaderBoard = [];
             const allUsers = await User.find({});
-            allUsers.forEach((user)=>{
-                leaderBoard.push({username: user.username, wins: user.wins  });
+            allUsers.forEach((user) => {
+                leaderBoard.push({
+                    username: user.username,
+                    wins: user.wins
+                });
             });
             io.of("/game").emit("getLeaderBoard", leaderBoard);
         });
@@ -148,19 +168,8 @@ io.of("/game").on("connection", function (socket) {
         socket.on("reaction", (data) => {
             io.of("/game").emit("reaction", data);
         });
-        // socket.on("love", (data)=>{
-        //     io.of("/game").emit("love", data);
-        // });
-        // socket.on("eyes", (data)=>{
-        //     io.of("/game").emit("eyes", data);
-        // });
-        // //clap reaction
-        // socket.on("clap", (data)=>{
-        //     io.of("/game").emit("clap", data);
-        // });
-
         //event to send message
-        socket.on("message", (data)=>{
+        socket.on("message", (data) => {
             io.of("/game").emit("message", data);
         });
 
@@ -173,22 +182,11 @@ io.of("/game").on("connection", function (socket) {
     }
 });
 
-io.of("/view").on("connection", (spectator)=>{
+io.of("/view").on("connection", (spectator) => {
     //event to send happy reaction
     spectator.on("reaction", (data) => {
         io.of("/game").emit("reaction", data);
     });
-    // spectator.on("love", (data) => {
-    //     io.of("/game").emit("love", data);
-    // });
-    // spectator.on("eyes", (data) => {
-    //     io.of("/game").emit("eyes", data);
-    // });
-    // //clap
-    // spectator.on("clap", (data) => {
-    //     io.of("/game").emit("clap", data);
-    // });
-
     //event to send message
     spectator.on("message", (data) => {
         io.of("/game").emit("message", data);
@@ -210,11 +208,13 @@ io.of("/view").on("connection", (spectator)=>{
 
 
 function join(socket) {
+    const gameRoom = socket.handshake.query.room;
     players[socket.id] = {
         opponent: unmatched,
         symbol: "X",
         socket: socket,
-        username: socket.id
+        username: socket.id,
+        gameRoom: gameRoom
     };
 
     // If 'unmatched' is defined it contains the socket.id of the player who was waiting for an opponent
@@ -222,6 +222,7 @@ function join(socket) {
     if (unmatched) {
         players[socket.id].symbol = "O";
         players[unmatched].opponent = socket.id;
+        players[socket.id].gameRoom = gameRoom;
         unmatched = null;
         // username[socket.id].username = socket.id;
     } else { //If 'unmatched' is not define it means the player (current socket) is waiting for an opponent (player #1)
@@ -237,6 +238,6 @@ function opponentOf(socket) {
 }
 
 //listen on server
-server.listen(process.env.PORT || 5000,  ()=>{
-    console.log("Server running on PORT:5000")
+server.listen(process.env.PORT || 5000, () => {
+    console.log("Server running on PORT:4000")
 });

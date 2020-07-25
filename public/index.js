@@ -1,12 +1,13 @@
 (function(){
     /////////////////////////////////////////////////
-    var url = window.location.origin + "/game";
+    const query = JSON.parse('{"' + decodeURI(window.location.search.substring(1)).replace(/=/g, '":"').replace(/&/g, '","') + '"}');
+    var url = `${window.location.origin}/game?u=${query.u}&type=${query.type}&room=${query.room}` ;
+    console.log(url)
     let socket = io(url);
 
     var myTurn = true;
     var symbol;
 
-    console.log(symbol)
     $("#username").text(symbol);
 
     function getBoardState() {
@@ -57,7 +58,6 @@
             $("#message").text("Your turn");
             $(".board button").removeAttr("disabled");
             const newMove = Number($("#moves").text()) + 1;
-            console.log("newMove:", newMove);
             $(".moves #moves").text(newMove);
         }
     }
@@ -84,7 +84,6 @@
         // If the symbol of the last move was the same as the current player
         // means that now is opponent's turn
         myTurn = data.symbol !== symbol;
-        console.log("Username: ",  data.username)
 
         if (!isGameOver()) { // If game isn't over show who's turn is this
             renderTurnMessage();
@@ -113,9 +112,12 @@
     socket.on("game.begin", function (data) {
         symbol = data.symbol; // The server is assigning the symbol
         myTurn = symbol === "X"; // 'X' starts first
-        window.localStorage.setItem("usernameX",data.username1);
-        window.localStorage.setItem("usernameO",data.username2);
         renderTurnMessage();
+    });
+
+    socket.on("cannot.join", (data)=>{
+        window.location.href = data.destination;
+        $(".output").append(`<p><em>${data.message}</em></p>`);
     });
 
     // Bind on event for opponent leaving the game
@@ -144,9 +146,15 @@
         if(isPlaying == 1){
             isPlaying = 0;
             sound.stop();
+            $("#toggle_sound").text("unmute");
+            $("#toggle_sound").removeClass("btn-danger");
+            $("#toggle_sound").addClass("btn-success");
         }else{
             isPlaying = 1;
             sound.play();
+            $("#toggle_sound").text("mute");
+            $("#toggle_sound").removeClass("btn-success");
+            $("#toggle_sound").addClass("btn-danger");
         }
     });
     //click sound
