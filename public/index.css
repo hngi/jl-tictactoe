@@ -168,3 +168,23 @@
         width: 100%;
     }
  }
+
+ #chat-message:focus {
+   border: none;
+   outline: none;
+ }
+
+ #chat-message {
+  padding-left: 10px;
+ }
+
+ body > div:nth-child(3) {
+   margin-left: 20px;
+ }
+
+ @media (min-width: 1000px) {
+   body {
+     height: 100vh;
+     overflow: hidden;
+   }
+ }
