@@ -181,6 +181,10 @@
  body > div:nth-child(3) {
    margin-left: 20px;
  }
+ #invite-friends{
+     display: flex;
+     justify-content: space-around;
+ }
 
  @media (min-width: 1000px) {
    body {
