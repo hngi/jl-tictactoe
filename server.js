@@ -253,6 +253,6 @@ function opponentOf(socket) {
 }
 
 //listen on server
-server.listen(process.env.PORT || 4000, () => {
+server.listen(process.env.PORT || 5000, () => {
     console.log("Server running on PORT:5000");
 });
