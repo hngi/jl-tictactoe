@@ -8,8 +8,6 @@
     var myTurn = true;
     var symbol;
 
-    $("#username").text(symbol);
-
     function getBoardState() {
         var obj = {};
 
@@ -167,9 +165,24 @@
         clicked.play();
     });
 
+    var user = "";
+    if (window.location.href.includes("join")) {
+        user = prompt(`Enter username to use in the game`);
+        console.log(user)
+        while (user === null) {
+            user = prompt(`Enter username to use in the game`);
+        }
+        $("#username").text(user)
+        socket.emit("joined.username", user);
+    }
     //communication events
     socket.on("user.join", (data)=>{
-        $(".output").append(`<small style="color: #7e7979aa;width: 100%;" class="pl-2"><em>${data}</em></small><br>`);
+        console.log("DATA", data)
+        if(data.includes("from")){
+            $(".output").append(`<small style="color: #7e7979aa;width: 100%;" class="pl-2"><em>${data}</em></small><br>`);
+        }else{
+            $(".output").append(`<small style="color: #7e7979aa;width: 100%;" class="pl-2"><em>${data}</em></small><br>`);
+        }
     })
     socket.on("user.left", (data)=>{
         $(".output").append(`<small style="color: #7e7979aa; width: 100%;" class="pl-2"><em>${data}</em></small><br>`);

@@ -64,9 +64,11 @@ var gameOngoing = false;
 io.of("/game").on("connection", function (socket) {
 
     if (socket.handshake.query.type == "join") {
-        io.of("/game").emit("user.left", `User joined from ${socket.handshake.query.u}'s link`);
-    } else {
-        io.of("/game").emit("user.join", `${socket.handshake.query.u} joined`);
+       socket.on("joined.username", (data)=>{
+            io.of("/game").emit("user.join", `${data} joined from ${socket.handshake.query.u}'s link`);
+       })
+    } else if(socket.handshake.query.type == "create") {
+        io.of("/game").emit("user.join", `${socket.handshake.query.u} created a game`);
     }
     let id = socket.id;
 
@@ -76,9 +78,9 @@ io.of("/game").on("connection", function (socket) {
         delete clients[socket.id];
         socket.broadcast.emit("clientdisconnect", id);
         if(socket.handshake.query.type == "join"){
-            io.of("/game").emit("user.left", `game disconnected`);
+            io.of("/game").emit("user.left", `${socket.handshake.query.u}'s opponent  disconnected`);
         }else{
-            io.of("/game").emit("user.left", `${socket.handshake.query.u} left`);
+            io.emit("user.left", `${socket.handshake.query.u} left`);
         }
     });
 
@@ -179,7 +181,7 @@ io.of("/game").on("connection", function (socket) {
 
         //event to send happy reaction
         socket.on("reaction", (data) => {
-            io.of("/game").emit("reaction", data);
+            io.emit("reaction", data);
         });
         //event to send message
         socket.on("message", (data) => {
@@ -253,6 +255,6 @@ function opponentOf(socket) {
 }
 
 //listen on server
-server.listen(process.env.PORT || 5000, () => {
+server.listen(process.env.PORT || 4000, () => {
     console.log("Server running on PORT:5000");
 });

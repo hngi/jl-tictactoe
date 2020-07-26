@@ -15,10 +15,18 @@
         </form>
     </div>
     <div class="join">
-        <form action="">
-            <input type="text" placeholder="username" id="join_username" required>
+        <form>
+            <p class="text-center"><big><strong>Intructions</strong></big></p>
+            <ol>
+                <li>Select a username (<strong>NOTE: </strong> an account will be created for the username)</li>
+                <li>Create game</li>
+                <li>Copy invite link and share with a friend to play with</li>
+                <li>Copy spectator link to let friends come watch you game</li>
+                <li>Enjoy!!!</li>
+            </ol>
+            <!-- <input type="text" placeholder="username" id="join_username" required>
             <input type="text" placeholder="link">
-            <a href="" id="game"><button type="button" id="create_game">join</button></a>
+            <a href="" id="game"><button type="button" id="create_game">join</button></a> -->
         </form>
     </div>
     <!-- <p>View ongoing games: <a id="view" href="" ></a></p> -->
@@ -56,6 +64,9 @@
         #view{
             color: #2c2ceb;
         }
+        .text-center{
+            text-align: center;
+        }
         @media (max-width: 769px){
             form{
                 width: 80%;
@@ -63,9 +74,9 @@
         }
     </style>
     <script>
-       const spectators = document.getElementById("view");
-       spectators.textContent = window.location.origin + "/view";
-       spectators.setAttribute("href", window.location.origin + "/view")
+    //    const spectators = document.getElementById("view");
+    //    spectators.textContent = window.location.origin + "/view";
+    //    spectators.setAttribute("href", window.location.origin + "/view")
         //input validation
         const player1 = $("#new_username").val();
         const player2 = $("#join_username").val();
