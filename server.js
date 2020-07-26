@@ -181,7 +181,7 @@ io.of("/game").on("connection", function (socket) {
 
         //event to send happy reaction
         socket.on("reaction", (data) => {
-            io.emit("reaction", data);
+            io.of("/game").emit("reaction", data);
         });
         //event to send message
         socket.on("message", (data) => {
