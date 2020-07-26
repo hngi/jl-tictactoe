@@ -7,7 +7,7 @@
      <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 </head>
 <body>
-    <h1>Tic-Tac-Toe</h1>
+    <h1>Mi-Tic-Tac-Toe</h1>
     <div class="create">
         <form action="">
             <input type="text" placeholder="username" id="new_username" required>
@@ -21,7 +21,7 @@
             <a href="" id="game"><button type="button" id="create_game">join</button></a>
         </form>
     </div>
-    <p>View ongoing games: <a id="view" href="" ></a></p>
+    <!-- <p>View ongoing games: <a id="view" href="" ></a></p> -->
     <style>
         body{
             background-color: #03a9f4;
@@ -55,6 +55,11 @@
         }
         #view{
             color: #2c2ceb;
+        }
+        @media (max-width: 769px){
+            form{
+                width: 80%;
+            }
         }
     </style>
     <script>
